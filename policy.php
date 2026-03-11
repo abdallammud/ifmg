@@ -1,5 +1,17 @@
-<?php $current_page = 'policy';
-include 'includes/header.php'; ?>
+<?php
+require_once 'includes/db.php';
+$slug = 'policy';
+$program_res = $mysqli->query("SELECT * FROM programs WHERE slug = '$slug' LIMIT 1");
+$program = $program_res->fetch_assoc();
+
+if ($program) {
+    $features_res = $mysqli->query("SELECT * FROM program_features WHERE program_id = {$program['id']} ORDER BY sort_order ASC");
+    $items_res = $mysqli->query("SELECT * FROM program_list_items WHERE program_id = {$program['id']} ORDER BY sort_order ASC");
+}
+
+$current_page = $slug;
+include 'includes/header.php';
+?>
 
 <main class="pt-20">
     <div class="bg-navy-900 py-16 text-white">
@@ -33,52 +45,52 @@ include 'includes/header.php'; ?>
             </aside>
 
             <div class="lg:col-span-3">
-                <span class="inline-block text-teal-600 font-semibold text-sm uppercase tracking-widest mb-3"
-                    data-translate="work_label">What We Do</span>
-                <h2 class="text-3xl font-bold text-navy-900 mb-6" data-translate="work2_title">Policy & Research
-                    Analysis</h2>
+                <span class="inline-block text-gold-600 font-semibold text-sm uppercase tracking-widest mb-3"
+                    data-translate="program_label">What We Do</span>
+                <h2 class="text-3xl font-bold text-navy-900 mb-6"><?php echo e(get_text($program, 'title')); ?></h2>
                 <div class="section-divider mb-8"></div>
-                <p class="text-navy-600 text-lg leading-relaxed mb-8" data-translate="work2_desc">
-                    We conduct evidence-based research to inform fiscal policy and governance reforms for sustainable
-                    national development.
-                </p>
+                <div class="text-navy-600 text-lg leading-relaxed mb-8 rich-text">
+                              <?php echo get_text($program, 'short_desc'); ?>
+                </div>
 
                 <div class="grid md:grid-cols-2 gap-8 mb-12">
-                    <div class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
-                        <div class="w-14 h-14 rounded-xl bg-emerald-500/10 flex items-center justify-center mb-6">
-                            <svg class="w-7 h-7 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                            </svg>
-                        </div>
-                        <h3 class="text-xl font-semibold text-navy-900 mb-3">Fiscal Policy Research</h3>
-                        <p class="text-navy-600">Analysis of revenue, expenditure, debt, and macroeconomic trends to
-                            support policy decisions.</p>
-                    </div>
-                    <div class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
-                        <div class="w-14 h-14 rounded-xl bg-navy-500/10 flex items-center justify-center mb-6">
-                            <svg class="w-7 h-7 text-navy-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                            </svg>
-                        </div>
-                        <h3 class="text-xl font-semibold text-navy-900 mb-3">Policy Papers & Briefs</h3>
-                        <p class="text-navy-600">Rigorous studies and recommendations on PFM, governance, and
-                            institutional reform.</p>
-                    </div>
+                    <?php if (isset($features_res) && $features_res->num_rows > 0): ?>
+                        <?php while ($f = $features_res->fetch_assoc()): ?>
+                            <div class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
+                                <div
+                                    class="w-14 h-14 rounded-xl <?php echo e($f['icon_bg_color'] ?? 'bg-gold-500/10'); ?> flex items-center justify-center mb-6">
+                                    <div class="text-<?php echo e($f['icon_color'] ?? 'gold-600'); ?>">
+                                        <?php if (!empty($f['icon_svg'])): ?>
+                                            <?php echo $f['icon_svg']; ?>
+                                        <?php else: ?>
+                                            <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                            </svg>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
+                                <h3 class="text-xl font-semibold text-navy-900 mb-3"><?php echo e(get_text($f, 'title')); ?>
+                                </h3>
+                                <p class="text-navy-600"><?php echo e(get_text($f, 'description')); ?></p>
+                            </div>
+                        <?php endwhile; ?>
+                    <?php endif; ?>
                 </div>
 
                 <div class="bg-navy-50 rounded-2xl p-8 border border-navy-100">
-                    <h3 class="text-xl font-semibold text-navy-900 mb-4">Research Areas</h3>
+                    <h3 class="text-xl font-semibold text-navy-900 mb-4" data-translate="program_focus">Policy Focus
+                        Areas</h3>
                     <ul class="space-y-3 text-navy-600">
-                        <li class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-emerald-500"></span>
-                            Revenue mobilization and tax policy</li>
-                        <li class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-emerald-500"></span>
-                            Public expenditure and budget transparency</li>
-                        <li class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-emerald-500"></span>
-                            Debt sustainability and management</li>
-                        <li class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-emerald-500"></span>
-                            Governance and anti-corruption</li>
+                        <?php if (isset($items_res) && $items_res->num_rows > 0): ?>
+                            <?php while ($item = $items_res->fetch_assoc()): ?>
+                                <li class="flex items-center gap-2">
+                                    <span
+                                        class="w-2 h-2 rounded-full bg-<?php echo e($item['bullet_color'] ?? 'gold-500'); ?>"></span>
+                                    <?php echo e(get_text($item, 'text')); ?>
+                                </li>
+                            <?php endwhile; ?>
+                        <?php endif; ?>
                     </ul>
                 </div>
             </div>

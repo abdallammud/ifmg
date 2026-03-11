@@ -1,4 +1,16 @@
-<?php include 'includes/header.php'; ?>
+<?php
+require_once 'includes/db.php';
+$current_page = 'about';
+$page_res = $mysqli->query("SELECT * FROM pages WHERE slug = 'history' LIMIT 1");
+$page_data = $page_res->fetch_assoc();
+
+// Fetch Vision & Mission details
+$vm_res = $mysqli->query("SELECT * FROM vision_mission LIMIT 1");
+$vm = $vm_res->fetch_assoc();
+
+
+include 'includes/header.php';
+?>
 
 <main class="pt-20">
     <!-- Breadcrumbs/Page Header -->
@@ -6,9 +18,9 @@
         <div class="max-w-[1300px] mx-auto px-4 sm:px-6 lg:px-8">
             <h1 class="text-4xl font-bold mb-4" data-translate="about_title">About the Institute</h1>
             <div class="flex gap-2 text-navy-200 text-sm">
-                <a href="index" class="hover:text-gold-500">Home</a>
+                <a href="index" class="hover:text-gold-500" data-translate="nav_home">Home</a>
                 <span>/</span>
-                <span class="text-white">About Us</span>
+                <span class="text-white" data-translate="nav_about">About Us</span>
             </div>
         </div>
     </div>
@@ -35,45 +47,42 @@
                 <div class="prose prose-lg max-w-none">
                     <span class="inline-block text-teal-600 font-semibold text-sm uppercase tracking-widest mb-3"
                         data-translate="about_label">About Us</span>
-                    <h2 class="text-3xl font-bold text-navy-900 mb-6" data-translate="about_title">About the Institute
+                    <h2 class="text-3xl font-bold text-navy-900 mb-6"><?php echo e(get_text($page_data, 'title')); ?>
                     </h2>
 
-                    <p class="text-navy-600 text-lg leading-relaxed mb-8" data-translate="about_content">
-                        The Institute of Financial Management and Good Governance (IFMG) is a national institution
-                        dedicated to strengthening financial management systems, enhancing policy research capacity, and
-                        promoting good governance practices across public sector institutions.
-                    </p>
+                    <div class="text-navy-600 text-lg leading-relaxed mb-8 rich-text">
+                        <?php echo get_text($page_data, 'content'); ?>
+                    </div>
 
                     <div class="grid sm:grid-cols-2 gap-8 my-12">
-                        <div class="p-8 bg-navy-50 rounded-2xl border border-navy-100">
-                            <div
-                                class="w-12 h-12 bg-teal-500 rounded-xl flex items-center justify-center mb-6 shadow-lg shadow-teal-200">
-                                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M13 10V3L4 14h7v7l9-11h-7z" />
-                                </svg>
+                        <?php if ($vm): ?>
+                            <div class="p-8 bg-navy-50 rounded-2xl border border-navy-100">
+                                <div
+                                    class="w-12 h-12 bg-teal-500 rounded-xl flex items-center justify-center mb-6 shadow-lg shadow-teal-200">
+                                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M13 10V3L4 14h7v7l9-11h-7z" />
+                                    </svg>
+                                </div>
+                                <h4 class="text-xl font-bold text-navy-900 mb-3" data-translate="about_mission_title">Our
+                                    Mission</h4>
+                                <div class="text-navy-600 rich-text"><?php echo get_text($vm, 'mission'); ?></div>
                             </div>
-                            <h4 class="text-xl font-bold text-navy-900 mb-3" data-translate="about_mission_title">Our
-                                Mission</h4>
-                            <p class="text-navy-600" data-translate="about_mission_text">To advance financial integrity
-                                and institutional excellence through research, capacity development, and strategic
-                                partnerships.</p>
-                        </div>
-                        <div class="p-8 bg-navy-50 rounded-2xl border border-navy-100">
-                            <div
-                                class="w-12 h-12 bg-gold-500 rounded-xl flex items-center justify-center mb-6 shadow-lg shadow-gold-200">
-                                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                                </svg>
+                            <div class="p-8 bg-navy-50 rounded-2xl border border-navy-100">
+                                <div
+                                    class="w-12 h-12 bg-gold-500 rounded-xl flex items-center justify-center mb-6 shadow-lg shadow-gold-200">
+                                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                    </svg>
+                                </div>
+                                <h4 class="text-xl font-bold text-navy-900 mb-3" data-translate="about_vision_title">Our
+                                    Vision</h4>
+                                <div class="text-navy-600 rich-text"><?php echo get_text($vm, 'vision'); ?></div>
                             </div>
-                            <h4 class="text-xl font-bold text-navy-900 mb-3" data-translate="about_vision_title">Our
-                                Vision</h4>
-                            <p class="text-navy-600" data-translate="about_vision_text">A transparent, accountable, and
-                                financially resilient public sector.</p>
-                        </div>
+                        <?php endif; ?>
                     </div>
                 </div>
             </div>

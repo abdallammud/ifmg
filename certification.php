@@ -1,5 +1,17 @@
-<?php $current_page = 'certification';
-include 'includes/header.php'; ?>
+<?php
+require_once 'includes/db.php';
+$slug = 'certification';
+$program_res = $mysqli->query("SELECT * FROM programs WHERE slug = '$slug' LIMIT 1");
+$program = $program_res->fetch_assoc();
+
+if ($program) {
+    $features_res = $mysqli->query("SELECT * FROM program_features WHERE program_id = {$program['id']} ORDER BY sort_order ASC");
+    $items_res = $mysqli->query("SELECT * FROM program_list_items WHERE program_id = {$program['id']} ORDER BY sort_order ASC");
+}
+
+$current_page = $slug;
+include 'includes/header.php';
+?>
 
 <main class="pt-20">
     <div class="bg-navy-900 py-16 text-white">
@@ -33,52 +45,52 @@ include 'includes/header.php'; ?>
             </aside>
 
             <div class="lg:col-span-3">
-                <span class="inline-block text-teal-600 font-semibold text-sm uppercase tracking-widest mb-3"
-                    data-translate="cert_label">Professional Standards</span>
-                <h2 class="text-3xl font-bold text-navy-900 mb-6" data-translate="cert_title">Certification Programs
-                </h2>
+                <span class="inline-block text-gold-600 font-semibold text-sm uppercase tracking-widest mb-3"
+                    data-translate="work_label">What We Do</span>
+                <h2 class="text-3xl font-bold text-navy-900 mb-6"><?php echo e(get_text($program, 'title')); ?></h2>
                 <div class="section-divider mb-8"></div>
-                <p class="text-navy-600 text-lg leading-relaxed mb-8" data-translate="cert_desc">
-                    IFMG provides internationally recognized certification programs designed to standardize professional
-                    practices in public financial management and governance.
-                </p>
+                <div class="text-navy-600 text-lg leading-relaxed mb-8 rich-text">
+                              <?php echo get_text($program, 'short_desc'); ?>
+                </div>
 
                 <div class="grid md:grid-cols-2 gap-8 mb-12">
-                    <div class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
-                        <div class="w-14 h-14 rounded-xl bg-gold-500/10 flex items-center justify-center mb-6">
-                            <svg class="w-7 h-7 text-gold-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
-                            </svg>
-                        </div>
-                        <h3 class="text-xl font-semibold text-navy-900 mb-3">PFM Specialist Certification</h3>
-                        <p class="text-navy-600">Advanced certification for professionals specializing in public sector
-                            accounting, auditing, and financial reporting.</p>
-                    </div>
-                    <div class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
-                        <div class="w-14 h-14 rounded-xl bg-navy-500/10 flex items-center justify-center mb-6">
-                            <svg class="w-7 h-7 text-navy-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                            </svg>
-                        </div>
-                        <h3 class="text-xl font-semibold text-navy-900 mb-3">Governance & Ethics Certificate</h3>
-                        <p class="text-navy-600">A rigorous program focusing on institutional integrity, ethical
-                            leadership, and anti-corruption frameworks.</p>
-                    </div>
+                    <?php if (isset($features_res) && $features_res->num_rows > 0): ?>
+                        <?php while ($f = $features_res->fetch_assoc()): ?>
+                            <div class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
+                                <div
+                                    class="w-14 h-14 rounded-xl <?php echo e($f['icon_bg_color'] ?? 'bg-gold-500/10'); ?> flex items-center justify-center mb-6">
+                                    <div class="text-<?php echo e($f['icon_color'] ?? 'gold-600'); ?>">
+                                        <?php if (!empty($f['icon_svg'])): ?>
+                                            <?php echo $f['icon_svg']; ?>
+                                        <?php else: ?>
+                                            <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                                            </svg>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
+                                <h3 class="text-xl font-semibold text-navy-900 mb-3"><?php echo e(get_text($f, 'title')); ?>
+                                </h3>
+                                <p class="text-navy-600"><?php echo e(get_text($f, 'description')); ?></p>
+                            </div>
+                        <?php endwhile; ?>
+                    <?php endif; ?>
                 </div>
 
                 <div class="bg-navy-50 rounded-2xl p-8 border border-navy-100">
-                    <h3 class="text-xl font-semibold text-navy-900 mb-4">Why Get Certified?</h3>
+                    <h3 class="text-xl font-semibold text-navy-900 mb-4" data-translate="cert_standards">Professional
+                        Standards</h3>
                     <ul class="space-y-3 text-navy-600">
-                        <li class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-gold-500"></span>
-                            Enhance your professional credibility and marketability.</li>
-                        <li class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-gold-500"></span>
-                            Master internationally recognized PFM standards.</li>
-                        <li class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-gold-500"></span> Join
-                            a network of certified governance professionals.</li>
-                        <li class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-gold-500"></span>
-                            Contribute to institutional excellence in the public sector.</li>
+                        <?php if (isset($items_res) && $items_res->num_rows > 0): ?>
+                            <?php while ($item = $items_res->fetch_assoc()): ?>
+                                <li class="flex items-center gap-2">
+                                    <span
+                                        class="w-2 h-2 rounded-full bg-<?php echo e($item['bullet_color'] ?? 'gold-500'); ?>"></span>
+                                    <?php echo e(get_text($item, 'text')); ?>
+                                </li>
+                            <?php endwhile; ?>
+                        <?php endif; ?>
                     </ul>
                 </div>
             </div>

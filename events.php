@@ -1,5 +1,9 @@
-<?php $current_page = 'events';
-include 'includes/header.php'; ?>
+<?php
+require_once 'includes/db.php';
+$events_res = $mysqli->query("SELECT * FROM events WHERE is_active = 1 ORDER BY event_date ASC");
+$current_page = 'events';
+include 'includes/header.php';
+?>
 
 <main class="pt-20">
     <div class="bg-navy-900 py-16 text-white">
@@ -37,61 +41,59 @@ include 'includes/header.php'; ?>
                 <div class="section-divider mb-8"></div>
 
                 <div class="space-y-8">
-                    <!-- Event 1 -->
-                    <div
-                        class="bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100 flex flex-col md:flex-row hover:shadow-md transition-shadow">
-                        <div
-                            class="md:w-1/3 bg-navy-900 text-white p-8 flex flex-col items-center justify-center text-center">
-                            <span class="text-xs uppercase tracking-widest text-navy-200 mb-2">March</span>
-                            <span class="text-5xl font-bold mb-2">15</span>
-                            <span class="text-sm font-medium">2026</span>
-                        </div>
-                        <div class="p-8 flex-1">
-                            <div class="flex items-center gap-2 mb-3">
-                                <span
-                                    class="px-3 py-1 bg-teal-100 text-teal-700 text-xs font-bold rounded-full uppercase">Workshop</span>
-                                <span class="text-navy-400 text-sm flex items-center gap-1">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                    </svg>
-                                    09:00 AM - 04:00 PM
-                                </span>
+                    <?php if ($events_res && $events_res->num_rows > 0): ?>
+                        <?php while ($ev = $events_res->fetch_assoc()): ?>
+                            <?php
+                            $ts = strtotime($ev['event_date']);
+                            $day = date('d', $ts);
+                            $month = date('F', $ts);
+                            $year = date('Y', $ts);
+                            $bg_class = $ev['color_scheme'] === 'gold-500' ? 'bg-gold-500 text-navy-900' : 'bg-navy-900 text-white';
+                            $label_bg = $ev['event_type'] === 'workshop' ? 'bg-teal-100 text-teal-700' : 'bg-navy-100 text-navy-700';
+                            ?>
+                            <div
+                                class="bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100 flex flex-col md:flex-row hover:shadow-md transition-shadow">
+                                <div
+                                    class="md:w-1/3 <?php echo $bg_class; ?> p-8 flex flex-col items-center justify-center text-center">
+                                    <span
+                                        class="text-xs uppercase tracking-widest <?php echo $ev['color_scheme'] === 'gold-500' ? 'text-navy-900/60' : 'text-navy-200'; ?> mb-2"><?php echo $month; ?></span>
+                                    <span class="text-5xl font-bold mb-2"><?php echo $day; ?></span>
+                                    <span class="text-sm font-medium"><?php echo $year; ?></span>
+                                </div>
+                                <div class="p-8 flex-1">
+                                    <div class="flex items-center gap-2 mb-3">
+                                        <span
+                                            class="px-3 py-1 <?php echo $label_bg; ?> text-xs font-bold rounded-full uppercase"><?php echo e($ev['event_type']); ?></span>
+                                        <span class="text-navy-400 text-sm flex items-center gap-1">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                            </svg>
+                                            <?php echo date('h:i A', strtotime($ev['start_time'])); ?> -
+                                            <?php echo date('h:i A', strtotime($ev['end_time'])); ?>
+                                        </span>
+                                    </div>
+                                    <h3 class="text-xl font-bold text-navy-900 mb-4"><?php echo e(get_text($ev, 'title')); ?>
+                                    </h3>
+                                    <div class="text-navy-600 mb-6 line-clamp-2 rich-text">
+                                        <?php echo get_text($ev, 'description'); ?></div>
+                                    <?php if (!empty($ev['registration_link'])): ?>
+                                        <a href="<?php echo e($ev['registration_link']); ?>" class="btn-secondary text-sm py-2 px-6"
+                                            target="_blank">Register Now</a>
+                                    <?php endif; ?>
+                                </div>
                             </div>
-                            <h3 class="text-xl font-bold text-navy-900 mb-4">International PFM Best Practices Forum</h3>
-                            <p class="text-navy-600 mb-6 line-clamp-2">A gathering of international experts to discuss
-                                the latest trends and standards in public financial management and oversight.</p>
-                            <a href="#" class="btn-secondary text-sm py-2 px-6">Register Now</a>
+                        <?php endwhile; ?>
+                    <?php else: ?>
+                        <div class="text-center py-12 bg-white rounded-2xl border border-gray-100 text-navy-400">
+                            <svg class="w-16 h-16 mx-auto mb-4 text-gray-200" fill="none" stroke="currentColor"
+                                viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                            <p>No upcoming events at the moment. Please check back later.</p>
                         </div>
-                    </div>
-
-                    <!-- Event 2 -->
-                    <div
-                        class="bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100 flex flex-col md:flex-row hover:shadow-md transition-shadow">
-                        <div
-                            class="md:w-1/3 bg-gold-500 text-navy-900 p-8 flex flex-col items-center justify-center text-center">
-                            <span class="text-xs uppercase tracking-widest text-navy-900/60 mb-2">April</span>
-                            <span class="text-5xl font-bold mb-2">02</span>
-                            <span class="text-sm font-medium">2026</span>
-                        </div>
-                        <div class="p-8 flex-1">
-                            <div class="flex items-center gap-2 mb-3">
-                                <span
-                                    class="px-3 py-1 bg-navy-100 text-navy-700 text-xs font-bold rounded-full uppercase">Conference</span>
-                                <span class="text-navy-400 text-sm flex items-center gap-1">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                    </svg>
-                                    10:00 AM - 01:00 PM
-                                </span>
-                            </div>
-                            <h3 class="text-xl font-bold text-navy-900 mb-4">Governance & Digital Integrity Summit</h3>
-                            <p class="text-navy-600 mb-6 line-clamp-2">Exploring the role of digital technology in
-                                enhancing transparency and institutional integrity within government operations.</p>
-                            <a href="#" class="btn-secondary text-sm py-2 px-6">Register Now</a>
-                        </div>
-                    </div>
+                    <?php endif; ?>
                 </div>
 
                 <div class="mt-12 p-8 bg-navy-50 rounded-2xl border border-dotted border-navy-200 text-center">

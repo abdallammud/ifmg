@@ -35,8 +35,66 @@ h4,
 h5,
 h6 {
     font-family: 'Poppins', sans-serif;
-    font-weight: 600;
+    font-weight: 900 !important;
     line-height: 1.2;
+}
+
+h1 {
+    font-size: 2.5rem !important;
+}
+
+h2 {
+    font-size: 2rem !important;
+}
+
+h3 {
+    font-size: 1.5rem !important;
+}
+
+h4 {
+    font-size: 1.25rem !important;
+}
+
+h5 {
+    font-size: 1rem !important;
+}
+
+h6 {
+    font-size: 0.875rem !important;
+}
+
+/* Rich Text Styles (from Quill) */
+.rich-text p {
+    margin-bottom: 1em;
+}
+
+.rich-text p:last-child {
+    margin-bottom: 0;
+}
+
+.rich-text ul,
+.rich-text ol {
+    margin: 1em 0;
+    padding-left: 1.5em;
+}
+
+.rich-text ul {
+    list-style-type: disc;
+}
+
+.rich-text ol {
+    list-style-type: decimal;
+}
+
+.rich-text h1,
+.rich-text h2,
+.rich-text h3 {
+    margin: 1.5em 0 0.5em;
+}
+
+.rich-text a {
+    color: #0d9488;
+    text-decoration: underline;
 }
 
 /* Custom Scrollbar */
@@ -314,8 +372,20 @@ h6 {
 }
 
 .sidebar-link.active {
-    background: var(--navy-900);
-    color: white;
+    background: #1e4150;
+    color: #fff;
+}
+
+.workstream-card {
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 1px solid rgba(0, 0, 0, 0.03);
+}
+
+.workstream-card:hover {
+    transform: translateY(-10px);
+    background: white;
+    box-shadow: 0 20px 40px rgba(11, 46, 79, 0.05);
+    border-color: rgba(15, 110, 140, 0.1);
 }
 
 /* Page header gradient */

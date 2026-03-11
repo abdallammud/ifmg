@@ -1,5 +1,17 @@
-<?php $current_page = 'capacity-building';
-include 'includes/header.php'; ?>
+<?php
+require_once 'includes/db.php';
+$slug = 'capacity-building';
+$program_res = $mysqli->query("SELECT * FROM programs WHERE slug = '$slug' LIMIT 1");
+$program = $program_res->fetch_assoc();
+
+if ($program) {
+    $features_res = $mysqli->query("SELECT * FROM program_features WHERE program_id = {$program['id']} ORDER BY sort_order ASC");
+    $items_res = $mysqli->query("SELECT * FROM program_list_items WHERE program_id = {$program['id']} ORDER BY sort_order ASC");
+}
+
+$current_page = $slug;
+include 'includes/header.php';
+?>
 
 <main class="pt-20">
     <div class="bg-navy-900 py-16 text-white">
@@ -34,50 +46,60 @@ include 'includes/header.php'; ?>
 
             <div class="lg:col-span-3">
                 <span class="inline-block text-teal-600 font-semibold text-sm uppercase tracking-widest mb-3"
-                    data-translate="work_label">What We Do</span>
-                <h2 class="text-3xl font-bold text-navy-900 mb-6" data-translate="work1_title">Capacity Development</h2>
+                    data-translate="work_label">What We We Do</span>
+                <h2 class="text-3xl font-bold text-navy-900 mb-6"><?php echo e(get_text($program, 'title')); ?></h2>
                 <div class="section-divider mb-8"></div>
-                <p class="text-navy-600 text-lg leading-relaxed mb-8" data-translate="work1_desc">
-                    We design and implement training programs to strengthen public financial management systems across
-                    government institutions.
-                </p>
+                <div class="text-navy-600 text-lg leading-relaxed mb-8 rich-text">
+                              <?php echo get_text($program, 'short_desc'); ?>
+                    <?php if (!empty($program['full_content_en'])): ?>
+                        <div class="mt-4">
+                            <?php echo get_text($program, 'full_content'); ?>
+                        </div>
+                    <?php endif; ?>
+                </div>
 
                 <div class="grid md:grid-cols-2 gap-8 mb-12">
-                    <div class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
-                        <div class="w-14 h-14 rounded-xl bg-teal-500/10 flex items-center justify-center mb-6">
-                            <svg class="w-7 h-7 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-                            </svg>
-                        </div>
-                        <h3 class="text-xl font-semibold text-navy-900 mb-3">PFM Training Programs</h3>
-                        <p class="text-navy-600">Structured courses on budgeting, accounting, procurement, and fiscal
-                            reporting for public sector officials.</p>
-                    </div>
-                    <div class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
-                        <div class="w-14 h-14 rounded-xl bg-gold-500/10 flex items-center justify-center mb-6">
-                            <svg class="w-7 h-7 text-gold-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                            </svg>
-                        </div>
-                        <h3 class="text-xl font-semibold text-navy-900 mb-3">Institutional Strengthening</h3>
-                        <p class="text-navy-600">Tailored support to ministries and agencies to improve systems,
-                            processes, and internal controls.</p>
-                    </div>
+                    <?php if (isset($features_res) && $features_res->num_rows > 0): ?>
+                        <?php while ($f = $features_res->fetch_assoc()): ?>
+                            <div class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
+                                <div
+                                    class="w-14 h-14 rounded-xl <?php echo e($f['icon_bg_color'] ?? 'bg-teal-500/10'); ?> flex items-center justify-center mb-6">
+                                    <div class="text-<?php echo e($f['icon_color'] ?? 'teal-600'); ?>">
+                                        <?php if (!empty($f['icon_svg'])): ?>
+                                            <?php echo $f['icon_svg']; ?>
+                                        <?php else: ?>
+                                            <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                                            </svg>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
+                                <h3 class="text-xl font-semibold text-navy-900 mb-3"><?php echo e(get_text($f, 'title')); ?>
+                                </h3>
+                                <p class="text-navy-600"><?php echo e(get_text($f, 'description')); ?></p>
+                            </div>
+                        <?php endwhile; ?>
+                    <?php else: ?>
+                        <div class="col-span-full py-8 text-center text-navy-400">No specific features listed.</div>
+                    <?php endif; ?>
                 </div>
 
                 <div class="bg-navy-50 rounded-2xl p-8 border border-navy-100">
-                    <h3 class="text-xl font-semibold text-navy-900 mb-4">Programs & Initiatives</h3>
+                    <h3 class="text-xl font-semibold text-navy-900 mb-4" data-translate="prog_init_title">Programs &
+                        Initiatives</h3>
                     <ul class="space-y-3 text-navy-600">
-                        <li class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-teal-500"></span>
-                            Public Financial Management Capacity Program</li>
-                        <li class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-teal-500"></span>
-                            Budget Execution & Treasury Management</li>
-                        <li class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-teal-500"></span>
-                            Procurement & Contract Management</li>
-                        <li class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-teal-500"></span> Audit
-                            & Internal Control</li>
+                        <?php if (isset($items_res) && $items_res->num_rows > 0): ?>
+                            <?php while ($item = $items_res->fetch_assoc()): ?>
+                                <li class="flex items-center gap-2">
+                                    <span
+                                        class="w-2 h-2 rounded-full bg-<?php echo e($item['bullet_color'] ?? 'teal-500'); ?>"></span>
+                                    <?php echo e(get_text($item, 'text')); ?>
+                                </li>
+                            <?php endwhile; ?>
+                        <?php else: ?>
+                            <li class="text-navy-400">No initiatives listed yet.</li>
+                        <?php endif; ?>
                     </ul>
                 </div>
             </div>

@@ -1,0 +1,59 @@
+/* Standard CSS overrides for IFMG Admin */
+
+:root {
+    --admin-navy-900: #0B2E4F;
+    --admin-navy-950: #071B2F;
+    --admin-teal-500: #0F6E8C;
+    --admin-teal-600: #0C5A73;
+    --admin-gold-500: #C9A227;
+    --admin-gold-600: #D4B23A;
+    --admin-bg: #F5F7FA;
+    --admin-card: #FFFFFF;
+}
+
+body {
+    background-color: var(--admin-bg);
+    color: var(--admin-navy-900);
+}
+
+/* Custom scrollbar for admin */
+::-webkit-scrollbar {
+    width: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #CBD5E1;
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--admin-teal-500);
+}
+
+/* Sidebar transitions */
+.sidebar-link {
+    transition: all 0.2s ease;
+}
+
+.sidebar-link:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+.sidebar-link.active {
+    background-color: var(--admin-teal-500);
+    color: white;
+}
+
+/* Card hover effect */
+.admin-card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.admin-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
+}

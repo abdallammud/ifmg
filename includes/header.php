@@ -4,7 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IFMG - Institute of Financial Management and Good Governance</title>
+    <title>
+        <?php echo e(get_settings('site_full_name') ?? 'IFMG - Institute of Financial Management and Good Governance'); ?>
+    </title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -53,10 +55,15 @@
             }
         }
     </script>
+    <script>
+        // Sync PHP language to JS
+        window.IFMG_LANG = '<?php echo isset($lang) ? $lang : "en"; ?>';
+    </script>
     <link rel="stylesheet" href="assets/css/styles.css">
 </head>
 
 <?php
+require_once 'includes/db.php';
 $current_page = isset($current_page) ? $current_page : preg_replace('/\.php$/', '', basename($_SERVER['PHP_SELF']));
 $about_active = in_array($current_page, ['about', 'vision-mission', 'structure', 'contact'], true);
 $programs_active = in_array($current_page, ['capacity-building', 'certification', 'research', 'policy'], true);
@@ -71,7 +78,9 @@ $publications_active = in_array($current_page, ['publication'], true);
             <div class="flex items-center justify-between " style="height:8rem">
                 <!-- Logo -->
                 <a href="index" class="flex items-center gap-3">
-                    <img src="./assets/images/logo.png" style="height:4.5rem" alt="IFMG Logo" class="h-14 w-auto">
+                    <img src="<?php echo fe_asset(get_settings('site_logo') ?? 'images/logo.png'); ?>"
+                        style="height:4.5rem" alt="<?php echo e(get_settings('site_name') ?? 'IFMG'); ?> Logo"
+                        class="h-14 w-auto">
                 </a>
 
                 <!-- Desktop Menu -->
@@ -83,9 +92,8 @@ $publications_active = in_array($current_page, ['publication'], true);
                     <!-- About Dropdown -->
                     <div class="dropdown relative">
                         <button
-                            class="nav-link px-4 py-2 font-medium text-sm transition-colors flex items-center gap-1 <?php echo $about_active ? 'nav-current text-teal-600' : 'text-navy-900'; ?>"
-                            data-translate="nav_about">
-                            About Us
+                            class="nav-link px-4 py-2 font-medium text-sm transition-colors flex items-center gap-1 <?php echo $about_active ? 'nav-current text-teal-600' : 'text-navy-900'; ?>">
+                            <span data-translate="nav_about">About Us</span>
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M19 9l-7 7-7-7" />
@@ -110,9 +118,8 @@ $publications_active = in_array($current_page, ['publication'], true);
                     <!-- Programs Dropdown -->
                     <div class="dropdown relative">
                         <button
-                            class="nav-link px-4 py-2 font-medium text-sm transition-colors flex items-center gap-1 <?php echo $programs_active ? 'nav-current text-teal-600' : 'text-navy-900'; ?>"
-                            data-translate="nav_programs">
-                            Programs
+                            class="nav-link px-4 py-2 font-medium text-sm transition-colors flex items-center gap-1 <?php echo $programs_active ? 'nav-current text-teal-600' : 'text-navy-900'; ?>">
+                            <span data-translate="nav_programs">Programs</span>
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M19 9l-7 7-7-7" />
@@ -138,9 +145,8 @@ $publications_active = in_array($current_page, ['publication'], true);
                     <!-- Events Dropdown -->
                     <div class="dropdown relative">
                         <button
-                            class="nav-link px-4 py-2 font-medium text-sm transition-colors flex items-center gap-1 <?php echo $events_active ? 'nav-current text-teal-600' : 'text-navy-900'; ?>"
-                            data-translate="nav_events_menu">
-                            Events
+                            class="nav-link px-4 py-2 font-medium text-sm transition-colors flex items-center gap-1 <?php echo $events_active ? 'nav-current text-teal-600' : 'text-navy-900'; ?>">
+                            <span data-translate="nav_events_menu">Events</span>
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M19 9l-7 7-7-7" />
@@ -159,17 +165,39 @@ $publications_active = in_array($current_page, ['publication'], true);
                         </div>
                     </div>
 
-                    <a href="publication"
-                        class="nav-link px-4 py-2 font-medium text-sm transition-colors <?php echo $publications_active ? 'nav-current text-teal-600' : 'text-navy-900'; ?>"
-                        data-translate="nav_publications">Publication</a>
+                    <!-- Publication Dropdown -->
+                    <div class="dropdown relative">
+                        <button
+                            class="nav-link px-4 py-2 font-medium text-sm transition-colors flex items-center gap-1 <?php echo $publications_active ? 'nav-current text-teal-600' : 'text-navy-900'; ?>">
+                            <span data-translate="nav_publications">Publication</span>
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </button>
+                        <div
+                            class="dropdown-menu absolute top-full left-0 mt-2 w-56 bg-white rounded-lg shadow-xl py-2 border border-gray-100">
+                            <a href="publication#policy"
+                                class="block px-4 py-2.5 text-navy-900 hover:bg-navy-50 text-sm font-medium"
+                                data-translate="nav_policy_papers">Policy papers</a>
+                            <a href="publication#working"
+                                class="block px-4 py-2.5 text-navy-900 hover:bg-navy-50 text-sm font-medium"
+                                data-translate="nav_working_papers">Working papers</a>
+                            <a href="publication#annual"
+                                class="block px-4 py-2.5 text-navy-900 hover:bg-navy-50 text-sm font-medium"
+                                data-translate="nav_annual_reports">Annual Reports</a>
+                        </div>
+                    </div>
                 </nav>
 
                 <!-- Right Section -->
                 <div class="flex items-center gap-4">
                     <!-- Language Toggle -->
                     <div class="lang-toggle">
-                        <button class="lang-btn active" data-lang="en">ENG</button>
-                        <button class="lang-btn" data-lang="so">SOM</button>
+                        <button class="lang-btn <?php echo $lang === 'en' ? 'active' : ''; ?>"
+                            data-lang="en">ENG</button>
+                        <button class="lang-btn <?php echo $lang === 'so' ? 'active' : ''; ?>"
+                            data-lang="so">SOM</button>
                     </div>
 
                     <!-- Mobile Menu Button -->
@@ -195,9 +223,8 @@ $publications_active = in_array($current_page, ['publication'], true);
 
                     <div class="mobile-dropdown">
                         <button
-                            class="w-full px-4 py-3 text-navy-900 hover:bg-navy-50 rounded-lg font-medium flex items-center justify-between"
-                            data-translate="nav_about">
-                            About Us
+                            class="w-full px-4 py-3 text-navy-900 hover:bg-navy-50 rounded-lg font-medium flex items-center justify-between">
+                            <span data-translate="nav_about">About Us</span>
                             <svg class="w-4 h-4 transition-transform" fill="none" stroke="currentColor"
                                 viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -218,9 +245,8 @@ $publications_active = in_array($current_page, ['publication'], true);
 
                     <div class="mobile-dropdown">
                         <button
-                            class="w-full px-4 py-3 text-navy-900 hover:bg-navy-50 rounded-lg font-medium flex items-center justify-between"
-                            data-translate="nav_programs">
-                            Programs
+                            class="w-full px-4 py-3 text-navy-900 hover:bg-navy-50 rounded-lg font-medium flex items-center justify-between">
+                            <span data-translate="nav_programs">Programs</span>
                             <svg class="w-4 h-4 transition-transform" fill="none" stroke="currentColor"
                                 viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -242,9 +268,8 @@ $publications_active = in_array($current_page, ['publication'], true);
 
                     <div class="mobile-dropdown">
                         <button
-                            class="w-full px-4 py-3 text-navy-900 hover:bg-navy-50 rounded-lg font-medium flex items-center justify-between"
-                            data-translate="nav_events_menu">
-                            Events
+                            class="w-full px-4 py-3 text-navy-900 hover:bg-navy-50 rounded-lg font-medium flex items-center justify-between">
+                            <span data-translate="nav_events_menu">Events</span>
                             <svg class="w-4 h-4 transition-transform" fill="none" stroke="currentColor"
                                 viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -261,8 +286,28 @@ $publications_active = in_array($current_page, ['publication'], true);
                         </div>
                     </div>
 
-                    <a href="publication" class="block px-4 py-3 text-navy-900 hover:bg-navy-50 rounded-lg font-medium"
-                        data-translate="nav_publications">Publication</a>
+                    <div class="mobile-dropdown">
+                        <button
+                            class="w-full px-4 py-3 text-navy-900 hover:bg-navy-50 rounded-lg font-medium flex items-center justify-between">
+                            <span data-translate="nav_publications">Publication</span>
+                            <svg class="w-4 h-4 transition-transform" fill="none" stroke="currentColor"
+                                viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </button>
+                        <div class="hidden pl-4 mt-1 space-y-1">
+                            <a href="publication#policy"
+                                class="block px-4 py-2.5 text-navy-600 hover:text-navy-900 text-sm"
+                                data-translate="nav_policy_papers">Policy papers</a>
+                            <a href="publication#working"
+                                class="block px-4 py-2.5 text-navy-600 hover:text-navy-900 text-sm"
+                                data-translate="nav_working_papers">Working papers</a>
+                            <a href="publication#annual"
+                                class="block px-4 py-2.5 text-navy-600 hover:text-navy-900 text-sm"
+                                data-translate="nav_annual_reports">Annual Reports</a>
+                        </div>
+                    </div>
                 </div>
             </nav>
         </div>

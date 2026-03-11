@@ -1,4 +1,8 @@
-<?php include 'includes/header.php'; ?>
+<?php
+require_once 'includes/db.php';
+$announcements_res = $mysqli->query("SELECT * FROM announcements ORDER BY published_date DESC");
+include 'includes/header.php';
+?>
 
 <main class="pt-20">
     <div class="bg-navy-900 py-16 text-white">
@@ -28,58 +32,34 @@
 
             <div class="lg:col-span-3">
                 <div class="space-y-6">
-                    <!-- Announcement 1 -->
-                    <div
-                        class="bg-white rounded-2xl p-8 shadow-sm border-l-4 border-gold-500 hover:shadow-md transition-shadow">
-                        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
-                            <div class="flex-1">
-                                <span class="text-sm font-medium text-teal-600 mb-2 block"
-                                    data-translate="announce1_date">January 20, 2026</span>
-                                <h3 class="text-xl font-bold text-navy-900 mb-3" data-translate="announce1_title">2026
-                                    Public
-                                    Financial Management Capacity Program - Applications Open</h3>
-                                <p class="text-navy-600" data-translate="announce1_desc">IFMG invites applications from
-                                    eligible
-                                    candidates for the 2026 PFM Capacity Development Program.</p>
+                    <?php if ($announcements_res && $announcements_res->num_rows > 0): ?>
+                        <?php while ($row = $announcements_res->fetch_assoc()): ?>
+                            <div
+                                class="bg-white rounded-2xl p-8 shadow-sm border-l-4 border-<?php echo ($row['type'] === 'Announcement' ? 'gold-500' : ($row['type'] === 'Grant' ? 'teal-500' : 'emerald-500')); ?> hover:shadow-md transition-shadow">
+                                <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+                                    <div class="flex-1">
+                                        <span class="text-sm font-medium text-teal-600 mb-2 block">
+                                            <?php echo date('F j, Y', strtotime($row['date'])); ?>
+                                        </span>
+                                        <h3 class="text-xl font-bold text-navy-900 mb-3">
+                                            <?php echo e(get_text($row, 'title')); ?>
+                                        </h3>
+                                        <div class="text-navy-600 rich-text">
+                                                      <?php echo get_text($row, 'content'); ?>
+                                        </div>
+                                    </div>
+                                    <?php if (!empty($row['file_path'])): ?>
+                                        <a href="ifmg_admin/<?php echo e($row['file_path']); ?>" target="_blank"
+                                            class="btn-secondary whitespace-nowrap">
+                                            Download
+                                        </a>
+                                    <?php endif; ?>
+                                </div>
                             </div>
-                            <!-- Removed Apply Now button as apply.php is being deleted -->
-                        </div>
-                    </div>
-
-                    <!-- Announcement 2 -->
-                    <div
-                        class="bg-white rounded-2xl p-8 shadow-sm border-l-4 border-teal-500 hover:shadow-md transition-shadow">
-                        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
-                            <div class="flex-1">
-                                <span class="text-sm font-medium text-teal-600 mb-2 block"
-                                    data-translate="announce2_date">January 10, 2026</span>
-                                <h3 class="text-xl font-bold text-navy-900 mb-3" data-translate="announce2_title">Policy
-                                    Research Grant Competition 2026</h3>
-                                <p class="text-navy-600" data-translate="announce2_desc">Call for research proposals on
-                                    public
-                                    financial management and governance themes.</p>
-                            </div>
-                            <button class="btn-secondary" data-translate="announce_open">Open</button>
-                        </div>
-                    </div>
-
-                    <!-- Announcement 3 -->
-                    <div
-                        class="bg-white rounded-2xl p-8 shadow-sm border-l-4 border-emerald-500 hover:shadow-md transition-shadow">
-                        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
-                            <div class="flex-1">
-                                <span class="text-sm font-medium text-teal-600 mb-2 block"
-                                    data-translate="announce3_date">December 15, 2025</span>
-                                <h3 class="text-xl font-bold text-navy-900 mb-3" data-translate="announce3_title">Annual
-                                    Report
-                                    2024 Published</h3>
-                                <p class="text-navy-600" data-translate="announce3_desc">The IFMG Annual Report for
-                                    fiscal year
-                                    2024 is now available for download.</p>
-                            </div>
-                            <button class="btn-secondary" data-translate="announce_download">Download</button>
-                        </div>
-                    </div>
+                        <?php endwhile; ?>
+                    <?php else: ?>
+                        <p class="text-center text-navy-500 py-12">No announcements found.</p>
+                    <?php endif; ?>
                 </div>
             </div>
         </div>
