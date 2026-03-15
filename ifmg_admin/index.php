@@ -8,7 +8,9 @@ session_start();
 // Define useful constants
 define('DS', DIRECTORY_SEPARATOR);
 define('BASE_PATH', __DIR__ . '/');
-define('BASE_URL', '/FileZillaFTP/source/diff/ifmg/ifmg_admin/');
+// Dynamically resolve BASE_URL for both local and production environments
+$scriptDir = str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME']));
+define('BASE_URL', rtrim($scriptDir, '/') . '/');
 
 // Autoloader
 spl_autoload_register(function ($class) {
