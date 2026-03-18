@@ -1,5 +1,5 @@
 RewriteEngine On
-RewriteBase /FileZillaFTP/source/diff/ifmg/ifmg_admin/
+# RewriteBase /FileZillaFTP/source/diff/ifmg/ifmg_admin/
 
 # If the request is not a real file or directory, route to index.php
 RewriteCond %{REQUEST_FILENAME} !-f
